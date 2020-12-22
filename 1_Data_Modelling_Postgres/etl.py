@@ -6,6 +6,18 @@ from sql_queries import *
 
 
 def process_song_file(cur, filepath):
+    """
+    This function is responsible for reading in data from song files and inserting
+    rows into tables 'songs' and 'artists'.
+    
+    Arguments:
+        cur: the cursor object.
+        filepath: song data file path.
+    
+    Returns:
+        None
+    """
+    
     # open song file
     df = pd.read_json(filepath, lines=True)
 
@@ -19,6 +31,23 @@ def process_song_file(cur, filepath):
 
 
 def process_log_file(cur, filepath):
+    
+    """
+    This function is responsible for reading in data from log files and inserting
+    rows into tables 'sonplays', 'users', 'time'. 
+    
+    The function assembles songplay data by executing JOIN query song_select
+    which combines tables 'songs' and 'artists'. Rows are then matched to log file
+    data based on title = %s, name = %s, duration = %s.
+    
+    
+    Arguments:
+        cur: the cursor object.
+        filepath: log data file path.
+    
+    Returns:
+        None
+    """
     # open log file
     df = pd.read_json(filepath, lines=True)
 
@@ -39,7 +68,7 @@ def process_log_file(cur, filepath):
         cur.execute(time_table_insert, list(row))
 
     # load user table
-    user_df = df[['userId','firstName','lastName','gender','level']].drop_duplicates()
+    user_df = df[['userId','firstName','lastName','gender','level']]
 
     # insert user records
     for i, row in user_df.iterrows():
@@ -59,11 +88,24 @@ def process_log_file(cur, filepath):
 
         # insert songplay record
         songplay_data = (row.timestamp, row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
-        print(songplay_data)
         cur.execute(songplay_table_insert, songplay_data)
 
 
 def process_data(cur, conn, filepath, func):
+    """
+    Description: This function is responsible for listing the files in a directory,
+    and then executing the ingest process for each file according to the function
+    that performs the transformation to save it to the database.
+
+    Arguments:
+        cur: the cursor object.
+        conn: connection to the database.
+        filepath: log data or song data file path.
+        func: function that transforms the data and inserts it into the database.
+
+    Returns:
+        None
+    """
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
