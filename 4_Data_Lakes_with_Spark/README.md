@@ -56,7 +56,7 @@ Using the song and log datasets, we'll create a star schema optimized for querie
 
 2. **etl.py** reads and processes files in the S3 bucket (song_data and log_data), loads them into the staging area, and then into the dimensional tables for analysis.
 4. **README.md** provides a detailed discussion of the project.
-5. **dl.cfg** config file used to contain AWS credentials (credentials not included).
+5. **dl.cfg** config file used to contain AWS credentials (credentials not included, enter your ID and password for use of this project).
 
 ## Project Steps
 Below are steps we follow to complete each component of this project.
